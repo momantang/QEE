@@ -7,14 +7,14 @@
 #include "utils.h"
 
 
-
 Q_GLOBAL_STATIC(CVMainWindow, cvmw)
 CVMainWindow::CVMainWindow(QWidget* parent) :
 	QMainWindow(parent)
 {
+	connect(this, &CVMainWindow::push_back, this, &CVMainWindow::addMat);
 	this->setWindowTitle("OpenCV4 Demo");
 	this->initUI();
-	connect(this, &CVMainWindow::push_back, this, &CVMainWindow::addMat);
+	this->initBaseToolBar();
 	this->showImage("D:/images/car.jpg");
 	/*
 		this->statusLabel=new QLabel("当前状态");
@@ -56,6 +56,7 @@ void CVMainWindow::initUI()
 	editToolBar = addToolBar("edit");
 	morphologyToolBar = addToolBar("morphology");
 	morphologyToolBar->setVisible(false);
+
 
 	//main center;
 	QGridLayout* main_layout = new QGridLayout;
@@ -100,6 +101,46 @@ void CVMainWindow::initUI()
 	
 
 
+}
+void CVMainWindow::initBaseToolBar() {
+	baseToolBar = addToolBar("&base");
+	cvColorComboBox = new QComboBox(this);
+	cvColorComboBox->addItem("BGR2Gray");
+	cvColorComboBox->addItem("Gray2BGR");
+	cvColorComboBox->addItem("BGR2HSV");
+	cvColorComboBox->addItem("BGR2RGB");
+	cvColorComboBox->addItem("BGR2BGRA");
+	baseToolBar->addWidget(new QLabel("转换："));
+	baseToolBar->addWidget(cvColorComboBox);
+	connect(cvColorComboBox, &QComboBox::activated, this, [this](int index) {
+		qDebug() << index;
+		cv::Mat mat;
+		switch (index)
+		{
+		case 0:
+			cv::cvtColor(currentMat, mat, cv::COLOR_BGR2GRAY);
+			break;
+		case 1:
+			cv::cvtColor(currentMat, mat, cv::COLOR_GRAY2BGR);
+			break;
+		case 2:
+			cv::cvtColor(currentMat, mat, cv::COLOR_BGR2HSV);
+			break;
+		case 3:
+			cv::cvtColor(currentMat, mat, cv::COLOR_BGR2RGB);
+			break;
+		case 4:
+			cv::cvtColor(currentMat, mat, cv::COLOR_BGR2BGRA);
+			break;
+		default:
+			break;
+		}
+		if (mat.empty())
+		{
+			return;
+		}
+		push_back(mat, "cvColco");
+		});
 }
 
 void CVMainWindow::createAction()

@@ -28,6 +28,7 @@ public:
 private:
     void initUI();
     void createAction();
+    void initBaseToolBar();
     void createToolBar();
     void showImage(QString path);
     void showDstMat(cv::Mat);
@@ -62,10 +63,15 @@ private:
 
     QToolBar* fileToolBar;
     QToolBar* editToolBar;
+    QToolBar* baseToolBar;
     QToolBar* morphologyToolBar;
     //基本action
     QAction* openImageAction;
     QAction* saveDstAction;
+
+    //basetoolBar
+    QComboBox* cvColorComboBox;
+
 
     //toolaction
     QAction* splitAction;

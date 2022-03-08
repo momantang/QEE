@@ -1,10 +1,11 @@
 #include "QEEMain.h"
+#include "qeecv/cvmainwindow.h"
 #include <QtWidgets/QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    QEEMain w;
+    CVMainWindow w;
     w.show();
     return a.exec();
 }

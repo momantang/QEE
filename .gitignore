@@ -34,3 +34,7 @@ build-QEE*
 QEEMain/.vs/*
 QEEMain/out
 CMakeLists.txt.user
+QEEMain/x64/*
+QEEMain/QEEMain.vcxproj.filters
+QEEMain/QEEMain.vcxproj.user
+QEEMain/QEEMain.vcxproj

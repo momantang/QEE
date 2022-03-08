@@ -12,8 +12,9 @@
 #include <QStandardItemModel>
 #include <QGraphicsScene>
 #include <QGraphicsView>
+#include <QTimer>
 #include "../utils.h"
-
+#include "camera.h"
 
 #include "aboutwidget.h"
 enum MorphologyType{};
@@ -30,12 +31,14 @@ private:
     void createAction();
     void initBaseToolBar();
     void createToolBar();
+    void showImage(cv::Mat& img);
     void showImage(QString path);
     void showDstMat(cv::Mat);
     void morphology(const cv::Mat& src, cv::Mat& dst, const QString action = "1");
 signals:
     void updateStatus(QString status);
     void push_back(cv::Mat,QString name);
+    void updateCurrentMat();
 
 
 private slots:
@@ -53,6 +56,10 @@ private slots:
     void addMat(cv::Mat,QString name);
   
 private:
+    Camera* camera;
+    QTimer* cameraTimer;
+
+    //widget 
     QMenu *fileMenu;
     QMenu* toolMenu;
     QMenu *editMenu;
@@ -83,6 +90,7 @@ private:
     QComboBox* morphologyCombobox;
     //QAction * 
     QAction* openCameraAction;
+    QAction* closeCameraAction;
     QAction* openVideoAction;
     QAction* exitAction;
 

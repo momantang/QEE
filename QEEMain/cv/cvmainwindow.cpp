@@ -13,9 +13,23 @@ CVMainWindow::CVMainWindow(QWidget* parent) :
 {
 	connect(this, &CVMainWindow::push_back, this, &CVMainWindow::addMat);
 	this->setWindowTitle("OpenCV4 Demo");
+
+	connect(this, &CVMainWindow::updateCurrentMat, [=]() {
+		this->showImage(currentMat);
+		});
+	this->camera = new Camera();
+	cameraTimer = new QTimer;
+	cameraTimer->setInterval(camera->getInteral());
+	connect(cameraTimer, &QTimer::timeout, this, [this]() {
+		this->camera->capture(currentMat);
+		push_back(currentMat, "live");
+		emit updateCurrentMat();
+		});
+	//cameraTimer->start();
 	this->initUI();
 	this->initBaseToolBar();
 	this->showImage("D:/images/car.jpg");
+
 	/*
 		this->statusLabel=new QLabel("当前状态");
 		connect(this,&CVMainWindow::updateStatus,this,[=](QString status){
@@ -81,12 +95,9 @@ void CVMainWindow::initUI()
 	connect(image_list, &QListView::clicked, this, [=](const QModelIndex& index) {
 		qDebug() << index.row();
 		qDebug() << "mats size: " << mats.size();
-		showDstMat(mats.at(index.row()));
+		//showDstMat(mats.at(index.row()));
 		currentMat = mats.at(index.row());
-		for (int i = 0; i < mats.size(); i++) {
-			auto name = QString("mat %1").arg(i).toStdString();
-			//cv::imshow(name, mats.at(i));
-		}
+		emit updateCurrentMat();
 		});
 	main_layout->addWidget(image_list, 1, 0);
 	//main_layout->setRowStretch(0, 3);
@@ -98,7 +109,7 @@ void CVMainWindow::initUI()
 
 
 	this->createAction();
-	
+
 
 
 }
@@ -146,8 +157,21 @@ void CVMainWindow::initBaseToolBar() {
 void CVMainWindow::createAction()
 {
 	openImageAction = new QAction("&Open Image", this);
+	openCameraAction = new QAction("&Open Camera", this);
+	closeCameraAction = new QAction("&Close Camera", this);
 	fileMenu->addAction(openImageAction);
+	fileMenu->addAction(openCameraAction);
+	fileMenu->addAction(closeCameraAction);
 
+
+	connect(openCameraAction, &QAction::triggered, this, [=]() {
+		this->camera->open();
+		this->cameraTimer->start();
+		});
+	connect(closeCameraAction, &QAction::triggered, this, [=]() {
+		this->cameraTimer->stop();
+		//this->camera->
+		});
 	exitAction = new QAction("&Exit", this);
 	fileMenu->addAction(exitAction);
 
@@ -173,7 +197,7 @@ void CVMainWindow::createAction()
 		//
 		qDebug() << "split action";
 		if (currentMat.type() != CV_8UC3) {
-			QMessageBox::warning(this, "操作错误","不能被split");
+			QMessageBox::warning(this, "操作错误", "不能被split");
 			return;
 		}
 		std::vector<cv::Mat> splits;
@@ -261,17 +285,26 @@ void CVMainWindow::showImage(QString path)
 {
 	cv::Mat img = cv::imread(path.toStdString());
 	currentMat = img;
+	push_back(img, path);
+	emit updateCurrentMat();
+}
+void CVMainWindow::showImage(cv::Mat& img)
+{
+
 	if (img.empty())
 	{
+		qDebug() << "img is empty";
 		return;
 	}
-	push_back(img,path);
+	if (img.type() != CV_8UC1 && img.type() != CV_8UC3) {
+		return;
+	}
 	QImage frame(
 		img.data,
 		img.cols,
 		img.rows,
 		img.step,
-		QImage::Format_BGR888);
+		(img.type() == CV_8UC3) ? QImage::Format_BGR888 : QImage::Format_Grayscale8);
 	QPixmap pixmap = QPixmap::fromImage(frame);
 	imageSrcScene->clear();
 	imageSrcScene->addPixmap(pixmap);
@@ -347,13 +380,15 @@ QImage fromMat(cv::Mat mat) {
 		return QImage((const unsigned char*)mat.data, mat.cols, mat.rows, QImage::Format_BGR888);
 	}
 	else if (mat.type() == CV_8UC1) {
-		return QImage((const unsigned char*)mat.data, mat.cols, mat.rows,mat.cols*mat.channels(), QImage::Format_Grayscale8);
+		return QImage((const unsigned char*)mat.data, mat.cols, mat.rows, mat.cols * mat.channels(), QImage::Format_Grayscale8);
 	}
 	return QImage();
 }
 void CVMainWindow::addMat(cv::Mat mat, QString name)
 {
-	mats.push_back(mat);
+	if (name != "live") {
+		mats.push_back(mat);
+	}
 	QPixmap pixmap = QPixmap::fromImage(fromMat(mat));
 	QStandardItem* item = new QStandardItem();
 	list_model->appendRow(item);

@@ -25,6 +25,8 @@ set(PROJECT_SOURCES
         b23mw.cpp
         #b23mw.ui
 
+       
+
         cv/camera.cpp
         cv/camera.h
         cv/mindvisioncamera.h
@@ -35,15 +37,16 @@ set(PROJECT_SOURCES
         #cv/cvmainwindow.ui
         cv/aboutwidget.h
         cv/aboutwidget.cpp
+cv/cvaction.h cv/cvaction.cpp
         #cv/aboutwidget.ui
         utils.h utils.cpp
 
-        include/CameraApi.h
-        include/CameraApiLoad.h
-        include/CameraDefine.h
-        include/CameraGrabber.h
-        include/CameraImage.h
-        include/CameraStatus.h
+        #include/CameraApi.h
+        #include/CameraApiLoad.h
+        #include/CameraDefine.h
+        #include/CameraGrabber.h
+        #include/CameraImage.h
+        #include/CameraStatus.h
 
 )
 

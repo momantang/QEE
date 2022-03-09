@@ -19,6 +19,7 @@ CVMainWindow::CVMainWindow(QWidget* parent)
 	this->initAOI();
 
 	connect(this, &CVMainWindow::showCommand_signal, this, &CVMainWindow::showCommand);
+	emit showCommand_signal("命令提示窗口");
 	//camera
 
 	cameraTimer = new QTimer(this);
@@ -65,6 +66,7 @@ void CVMainWindow::initUI()
 	imageScene = new QGraphicsScene(this);
 	imageView = new QGraphicsView(imageScene);
 	textEdit = new QPlainTextEdit(this);
+	textEdit->setReadOnly(true);
 	conentLayout->addWidget(imageView);
 	conentLayout->addWidget(textEdit);
 	QGridLayout* mainLayout = new QGridLayout;
@@ -112,13 +114,14 @@ void CVMainWindow::initActions()
 		//打开图片
 		if (act == openImageAction) {
 			QFileDialog dlg(this);
-			dlg.setDirectory("D:/images");
+			dlg.setDirectory("D:/Qee/data/images");
 			dlg.setFileMode(QFileDialog::ExistingFile);
 			dlg.setNameFilter("Image(*.jpg *.png *.bmp *.pgm)");
 			if (dlg.exec()) {
 				auto path = dlg.selectedFiles();
 				cv::Mat img = cv::imread(path.at(0).toStdString());
 				emit this->updateCurrentMat(img, path.at(0));
+				emit showCommand_signal("打开文件："+path.at(0));
 			}
 		}
 		//打开摄像头
@@ -127,15 +130,18 @@ void CVMainWindow::initActions()
 			camera->openCamera();
 			cameraTimer->setInterval(100);
 			cameraTimer->start();
+			emit showCommand_signal("打开内置摄像头" );
 		}
 		//暂停摄像头
 		if (act == pauseCameraAction) {
 			cameraTimer->stop();
+			emit showCommand_signal("暂停内置摄像头定时器" );
 		}
 		//关闭摄像头
 		if (act == closeCameraAction) {
 			cameraTimer->stop();
 			camera->closeCamera();
+			emit showCommand_signal("release 内置摄像头");
 		}
 
 
@@ -163,14 +169,39 @@ void CVMainWindow::initActions()
 void CVMainWindow::initAOI()
 {
 	aoiMenu = menuBar()->addMenu("&AOI");
+	readGrayAction = new QAction("&read gray img", this);
 	medianBlurAction = new QAction("&Median Blur", this);
+	calculateLightAction = new QAction("&calculateLightAction", this);
+	removeLight1Action = new QAction("&removeLight1", this);
+	removeLight2Action = new QAction("&removeLight2Action", this);
+	aoiMenu->addAction(readGrayAction);
 	aoiMenu->addAction(medianBlurAction);
+	aoiMenu->addAction(calculateLightAction);
+	aoiMenu->addAction(removeLight1Action);
+	aoiMenu->addAction(removeLight2Action);
+	//aoiMenu->addAction(medianBlurAction);
 	connect(aoiMenu, &QMenu::triggered, this, [this](QAction* act) {
+		if (act == readGrayAction) {
+			cv::Mat gray = MatOperator::read2Gray("d:/qee/data/images/test_noise.pgm");
+			emit updateCurrentMat(gray, "aoi_gray");
+		}else
 		if (act == medianBlurAction) {
 			emit showCommand_signal("消除噪声");
 			cv::Mat img_noise;
 			cv::medianBlur(currentMat, img_noise, 3);
-			emit updateCurrentMat(img_noise, "img_noise");
+			emit updateCurrentMat(img_noise, "aoi_img_noise");
+		}else
+		if (act == calculateLightAction) {
+			cv::Mat pattern = MatOperator::calculateLightPattern(currentMat);
+			emit updateCurrentMat(pattern, "aoi_pattern");
+		}
+		else if (act == removeLight1Action) {
+			cv::Mat aux = MatOperator::removeLight(mat_map.at("aoi_img_noise"),mat_map.at("aoi_pattern"),1);
+			emit updateCurrentMat(aux, "aoi_aux");
+		}
+		else if (act == removeLight2Action) {
+			cv::Mat aux = MatOperator::removeLight(mat_map.at("aoi_img_noise"), mat_map.at("aoi_pattern"), 0);
+			emit updateCurrentMat(aux, "aoi_aux");
 		}
 		});
 
@@ -180,7 +211,7 @@ void CVMainWindow::initAOI()
 
 void CVMainWindow::showCommand(QString cmd)
 {
-	this->textEdit->insertPlainText(cmd);
+	this->textEdit->insertPlainText(cmd+"\n");
 }
 
 void CVMainWindow::showImage(cv::Mat& mat, QString name)

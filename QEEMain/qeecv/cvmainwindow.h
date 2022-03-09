@@ -10,6 +10,7 @@
 #include <map>
 #include "camera.h"
 #include "BlurWidget.h"
+#include "../MatOperator.h"
 //namespace Ui { class CVMainWindow; };
 
 class CVMainWindow : public QMainWindow
@@ -50,12 +51,16 @@ private:
 	
 	QAction* settingAction;
 	QAction* exitAction;
-
+	
 	QMenu* toolMenu;
 	QAction* eqblurAction;
 	
 	QMenu* aoiMenu;
+	QAction* readGrayAction;
 	QAction* medianBlurAction;
+	QAction* calculateLightAction;
+	QAction* removeLight1Action;
+	QAction* removeLight2Action;
 
 
 	QStatusBar* mainStatusBar;

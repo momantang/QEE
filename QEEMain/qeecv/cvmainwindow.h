@@ -22,18 +22,21 @@ public:
 	cv::Mat& getCurrentMat() { return currentMat; }
 signals:
 	void updateCurrentMat(cv::Mat& mat,QString name);
+	void showCommand_signal(QString cmd);
 private:
 	void initUI();
 	void initActions();
 	void initAOI();
 private :
+	void showCommand(QString cmd);
 	void showImage(cv::Mat& mat,QString name);
+	void showImageInListView(cv::Mat& mat, QString name);
 private:
 	Camera* camera;
 	QTimer* cameraTimer;
 	cv::Mat currentMat;
-	QImage currentImage;
 	std::map<QString, cv::Mat> mat_map;
+	QImage currentImage;
 
 	BlurWidget* blurWidget = nullptr;
 	QDockWidget* blurDockWidget=nullptr;
@@ -62,6 +65,9 @@ private:
 	QGraphicsScene* imageScene;
 	QGraphicsView* imageView;
 
+
+	QListView* image_listview;
+	QStandardItemModel* item_model;
 	QPlainTextEdit* textEdit;
 	//Ui::CVMainWindow *ui;
 };

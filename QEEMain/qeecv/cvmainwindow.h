@@ -8,7 +8,7 @@
 #include <QtWidgets>
 #include <opencv2/opencv.hpp>
 #include <map>
-
+#include "camera.h"
 #include "BlurWidget.h"
 //namespace Ui { class CVMainWindow; };
 
@@ -19,14 +19,18 @@ class CVMainWindow : public QMainWindow
 public:
 	CVMainWindow(QWidget *parent = Q_NULLPTR);
 	~CVMainWindow();
+	cv::Mat& getCurrentMat() { return currentMat; }
 signals:
 	void updateCurrentMat(cv::Mat& mat,QString name);
 private:
 	void initUI();
 	void initActions();
+	void initAOI();
 private :
 	void showImage(cv::Mat& mat,QString name);
 private:
+	Camera* camera;
+	QTimer* cameraTimer;
 	cv::Mat currentMat;
 	QImage currentImage;
 	std::map<QString, cv::Mat> mat_map;
@@ -46,7 +50,7 @@ private:
 
 	QMenu* toolMenu;
 	QAction* eqblurAction;
-
+	
 	QMenu* aoiMenu;
 	QAction* medianBlurAction;
 

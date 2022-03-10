@@ -11,6 +11,8 @@
 #include "camera.h"
 #include "BlurWidget.h"
 #include "../MatOperator.h"
+#include "settingsdialog.h"
+
 //namespace Ui { class CVMainWindow; };
 
 class CVMainWindow : public QMainWindow
@@ -44,16 +46,20 @@ private:
 
 
 	QMenu* fileMenu;
+	QToolBar* fileToolBar;
 	QAction* openImageAction;
 	QAction* openCameraAction;
 	QAction* pauseCameraAction;
 	QAction* closeCameraAction;
 	
+
 	QAction* settingAction;
 	QAction* exitAction;
 	
 	QMenu* toolMenu;
 	QAction* eqblurAction;
+
+
 	
 	QMenu* aoiMenu;
 	QAction* readGrayAction;
@@ -74,5 +80,7 @@ private:
 	QListView* image_listview;
 	QStandardItemModel* item_model;
 	QPlainTextEdit* textEdit;
+
+	SettingsDialog settingsDialog;
 	//Ui::CVMainWindow *ui;
 };

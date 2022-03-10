@@ -1,5 +1,6 @@
 #include "cvmainwindow.h"
 #include "../Utils.h"
+#include "settingsdialog.h"
 //#include "ui_cvmainwindow.h"
 
 CVMainWindow::CVMainWindow(QWidget* parent)
@@ -13,7 +14,7 @@ CVMainWindow::CVMainWindow(QWidget* parent)
 		this->showImageInListView(mat, name);
 		});
 	this->setWindowTitle("CV demo");
-	this->resize(1024, 768);
+	this->resize(1920, 800);
 	this->initUI();
 	this->initActions();
 	this->initAOI();
@@ -109,7 +110,15 @@ void CVMainWindow::initActions()
 	fileMenu->addAction(pauseCameraAction);
 	fileMenu->addAction(closeCameraAction);
 	fileMenu->addSeparator();
+	settingAction = new QAction("&setting", this);
+	fileMenu->addAction(settingAction);
+	fileMenu->addSeparator();
 	fileMenu->addAction(exitAction);
+
+	fileToolBar = addToolBar("file");
+	fileToolBar->addAction(settingAction);
+
+
 	connect(fileMenu, &QMenu::triggered, this, [this](QAction* act) {
 		//打开图片
 		if (act == openImageAction) {
@@ -143,7 +152,10 @@ void CVMainWindow::initActions()
 			camera->closeCamera();
 			emit showCommand_signal("release 内置摄像头");
 		}
-
+		if (act == settingAction) {
+			settingsDialog.show();
+			settingsDialog.setFocus();
+		}
 
 		if (act == exitAction) {
 			this->close();

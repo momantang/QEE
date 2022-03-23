@@ -115,9 +115,10 @@ void CVMainWindow::initActions()
 	fileMenu->addSeparator();
 	fileMenu->addAction(exitAction);
 
+	voiceAction = new QAction("&Voice Order", this);
 	fileToolBar = addToolBar("file");
 	fileToolBar->addAction(settingAction);
-
+	fileToolBar->addAction(voiceAction);
 
 	connect(fileMenu, &QMenu::triggered, this, [this](QAction* act) {
 		//打开图片
@@ -156,12 +157,19 @@ void CVMainWindow::initActions()
 			settingsDialog.show();
 			settingsDialog.setFocus();
 		}
+		if (act == voiceAction) {
+			audioDialog = new AudioDialog(this);
+			audioDialog->show();
+		}
 
 		if (act == exitAction) {
 			this->close();
 		}
 		});
-
+	connect(voiceAction, &QAction::triggered, this, [this]() {
+		audioDialog = new AudioDialog(this);
+		audioDialog->show();
+		});
 
 	//Tool Menu;
 	toolMenu = menuBar()->addMenu("&Tool");

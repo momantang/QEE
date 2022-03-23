@@ -1,7 +1,7 @@
 #pragma once
 
-#include <QtWidgets/QMainWindow>
-#include "ui_QEEMain.h"
+#include <QtWidgets>
+#include "audiodialog.h"
 
 class QEEMain : public QMainWindow
 {
@@ -11,5 +11,6 @@ public:
     QEEMain(QWidget *parent = Q_NULLPTR);
 
 private:
-    Ui::QEEMainClass ui;
+    AudioDialog* dlg;
+    QPushButton* button;
 };

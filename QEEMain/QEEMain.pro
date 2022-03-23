@@ -15,10 +15,13 @@ RCC_DIR += .
 include(QEEMain.pri)
 
 FORMS += \
+    audiodialog.ui \
     qeecv/settingsdialog.ui
 
 HEADERS += \
+    audiodialog.h \
     qeecv/settingsdialog.h
 
 SOURCES += \
+    audiodialog.cpp \
     qeecv/settingsdialog.cpp

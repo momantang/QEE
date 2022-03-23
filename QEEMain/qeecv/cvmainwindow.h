@@ -11,6 +11,7 @@
 #include "camera.h"
 #include "BlurWidget.h"
 #include "../MatOperator.h"
+#include "audiodialog.h"
 #include "settingsdialog.h"
 
 //namespace Ui { class CVMainWindow; };
@@ -51,6 +52,8 @@ private:
 	QAction* openCameraAction;
 	QAction* pauseCameraAction;
 	QAction* closeCameraAction;
+
+	QAction* voiceAction;
 	
 
 	QAction* settingAction;
@@ -83,4 +86,5 @@ private:
 
 	SettingsDialog settingsDialog;
 	//Ui::CVMainWindow *ui;
+	AudioDialog* audioDialog;
 };

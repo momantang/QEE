@@ -45,3 +45,9 @@ B23Downloader/x64/*
 B23Downloader/B23Downloader.vcxproj.filters
 B23Downloader/B23Downloader.vcxproj.user
 B23Downloader/B23Downloader.vcxproj
+B23Downloader/*
+demo/*
+QEECAR/*
+CmakeProject1/*
+.vs/*
+B23Downloader/B23Downloader.qrc
